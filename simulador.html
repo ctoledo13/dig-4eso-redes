@@ -155,7 +155,8 @@ function ping(src,target){
     okLines(0);return {ok:true,L,dev:dst,path:pathTo(src,dst,d.par)};
   }
   const gw=effGW(src);
-  if(!gw||net3(gw)!==net3(sip))return {ok:false,L:['ping: connect: Network is unreachable','','(Pista: para salir de tu red necesitas una puerta de enlace válida de tu misma red)']};
+  if(!gw)return {ok:false,L:['ping: connect: Network is unreachable','','(Pista: este equipo no tiene puerta de enlace. Para salir de tu red, rellena “Puerta de enlace” con la IP del router.)']};
+  if(net3(gw)!==net3(sip))return {ok:false,L:['ping: connect: Network is unreachable','',`(Pista: la puerta de enlace de este equipo es ${gw}, que no es de tu red ${net3(sip)}.___. Debe ser la IP del router, no la dirección a la que quieres llegar.)`]};
   if(!d.vis.has('RT')||gw!==rtIP()||net3(rtIP())!==net3(sip))return fail(sip);
   if(isPrivate(tp))return fail(rtIP());
   okLines(20);return {ok:true,L,dev:'NET',path:pathTo(src,'RT',d.par).concat(['NET'])};
@@ -265,12 +266,14 @@ function cfgPanel(){
   b.innerHTML=`<div class="row" style="margin-top:6px"><label style="margin:0"><input type="radio" name="md" value="manual" ${c.mode==='manual'?'checked':''}> Manual (IP fija)</label><label style="margin:0"><input type="radio" name="md" value="dhcp" ${c.mode==='dhcp'?'checked':''}> Automática (DHCP)</label></div>
    <label>Dirección IP</label><input type="text" id="fIP" value="${c.mode==='dhcp'?(dhcpIP(sel)||''):c.ip}" ${c.mode==='dhcp'?'readonly':''} placeholder="192.168.${S.X}.__">
    <label>Máscara de red</label><input type="text" readonly value="255.255.255.0">
-   <label>Puerta de enlace</label><input type="text" id="fGW" value="${c.mode==='dhcp'?(dhcpIP(sel)?rtIP():''):c.gw}" ${c.mode==='dhcp'?'readonly':''} placeholder="IP del router">
+   <label>Puerta de enlace <span class="hint" style="font-weight:400">(la IP del router)</span></label><input type="text" id="fGW" value="${c.mode==='dhcp'?(dhcpIP(sel)?rtIP():''):c.gw}" ${c.mode==='dhcp'?'readonly':''} placeholder="IP del router">
    <p><button id="fSave">💾 Guardar</button> <span id="fMsg" class="hint"></span></p>`;
   b.querySelectorAll('input[name=md]').forEach(r=>r.onchange=()=>{c.mode=r.value;save();draw();cfgPanel();evalState();});
   $('fSave').onclick=()=>{if(c.mode==='manual'){c.ip=$('fIP').value.trim();c.gw=$('fGW').value.trim();}
     const okIP=c.mode==='dhcp'||parseIP(c.ip),okGW=c.mode==='dhcp'||!c.gw||parseIP(c.gw);
-    $('fMsg').innerHTML=okIP&&okGW?'<span class="ok">Guardado ✔</span>':'<span class="bad">Revisa el formato: 4 números del 0 al 255 separados por puntos.</span>';
+    let msg=okIP&&okGW?'<span class="ok">Guardado ✔</span>':'<span class="bad">Revisa el formato: 4 números del 0 al 255 separados por puntos.</span>';
+    if(okIP&&okGW&&c.mode==='manual'&&c.gw&&parseIP(c.ip)&&net3(c.gw)!==net3(c.ip))msg='<span class="bad">Guardado, pero ⚠️ la puerta de enlace no es de tu misma red. Tiene que ser la IP del router.</span>';
+    $('fMsg').innerHTML=msg;
     save();draw();evalState();};
   termOwner(sel);
 }
