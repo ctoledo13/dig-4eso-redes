@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actividades del portfolio · Redes 4º ESO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#1d2433;--muted:#5b6476;--line:#dbe2ec;--pri:#0f766e;--pri-soft:#ccfbf1;--ok:#15803d;--ok-soft:#dcfce7;--bad:#b91c1c;--bad-soft:#fee2e2;--hl:#fde047;--warn-soft:#fef3c7}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;font-size:16.5px}
+header{background:linear-gradient(135deg,#134e4a,#0f766e 60%,#0891b2);color:#fff;padding:22px 16px}
+header .wrap{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+header h1{margin:0;font-size:24px}header p{margin:2px 0 0;opacity:.9;font-size:15px}header a{color:#fff;font-size:14px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+.qhead{display:flex;gap:12px;align-items:flex-start}
+.qnum{background:var(--pri);color:#fff;border-radius:12px;font-weight:800;font-size:20px;min-width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.qhead h2{margin:4px 0 0;font-size:21px;line-height:1.3}
+.step{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px;background:#fbfdfd}
+.step h3{margin:0 0 6px;font-size:17px;display:flex;align-items:center;gap:8px}
+.step .sub{font-size:14px;color:var(--muted);margin:0 0 10px}
+.step.lock{opacity:.55}
+.reading{font-size:17px;line-height:2.05;user-select:none;-webkit-user-select:none}
+.ch{cursor:pointer;border-radius:3px;padding:1px 0;transition:background .15s}
+.ch:hover{background:#fef9c3}
+.ch.sel{background:var(--hl);box-shadow:inset 0 -3px 0 #ca8a04}
+.ch.right{background:#bbf7d0;box-shadow:inset 0 -3px 0 #15803d}
+.ch.wrong{background:#fecaca;box-shadow:inset 0 -3px 0 #b91c1c;text-decoration:line-through}
+.ch.miss{box-shadow:inset 0 -3px 0 #15803d;background:#ecfdf5}
+.done .ch{cursor:default}
+button{font:inherit;font-size:15px;border:0;border-radius:10px;padding:9px 15px;background:var(--pri);color:#fff;cursor:pointer}
+button.ghost{background:var(--pri-soft);color:var(--pri)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.fb{font-size:14.5px;padding:8px 11px;border-radius:9px;margin-top:8px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}.fb.bad{background:var(--bad-soft);color:var(--bad)}.fb.info{background:var(--warn-soft);color:#92400e}
+textarea{font:inherit;width:100%;min-height:96px;padding:10px;border:1px solid var(--line);border-radius:10px;resize:vertical}
+textarea:disabled{background:#f1f5f9}
+.wc{font-size:13.5px;color:var(--muted);margin-top:4px}
+select{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;max-width:100%}
+select.good{border-color:var(--ok);background:var(--ok-soft)}select.badsel{border-color:var(--bad);background:var(--bad-soft)}
+.levels{display:flex;flex-direction:column;gap:8px}
+.lvl{border:2px solid #5eead4;border-radius:12px;padding:8px 10px;background:#f0fdfa;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lvl b{min-width:96px;font-size:14px;color:var(--pri)}
+.tree{display:flex;flex-direction:column;align-items:center;gap:0}
+.tree .root{background:var(--pri);color:#fff;border-radius:12px;padding:8px 16px;font-weight:700}
+.tree .branches{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;margin-top:14px;position:relative}
+.tree .br{border:2px solid #5eead4;border-radius:12px;padding:10px;background:#f0fdfa;display:flex;flex-direction:column;gap:8px}
+.tree .br h4{margin:0;text-align:center}
+@media (max-width:600px){.tree .branches{grid-template-columns:1fr}}
+.classify{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.classify div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fff}
+.boards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.board{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.board p{margin:0 0 6px;font-size:14.5px}
+.board svg{width:100%;height:auto;background:#f8fafc;border-radius:10px;border:1px solid var(--line);touch-action:manipulation}
+.board .ok{color:var(--ok)}.board .bad{color:var(--bad)}
+pre.term{background:#0f172a;color:#d1fae5;border-radius:12px;padding:12px;overflow-x:auto;font-size:13.5px;font-family:ui-monospace,"Ubuntu Mono",Menlo,Consolas,monospace;user-select:none;-webkit-user-select:none;white-space:pre}
+pre.term .tk{cursor:pointer;border-radius:3px}
+pre.term .tk:hover{background:#334155}
+pre.term .tk.sel{background:#facc15;color:#111}
+pre.term .tk.right{background:#22c55e;color:#111}
+pre.term .tk.wrong{background:#ef4444;color:#fff}
+.cables{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.cables .cb{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
+.cables svg{width:100%;height:auto;background:#f8fafc;border-radius:10px}
+#nav{position:sticky;top:0;z-index:20;background:#fffffff2;border-bottom:1px solid var(--line)}
+#nav .wrap{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;align-items:center}
+#nav a{flex:none;text-decoration:none;font-weight:700;font-size:14px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;color:#334155}
+#nav a.cur{outline:3px solid #f59e0b}
+#nav a.half{background:#fef3c7;color:#92400e}
+#nav a.full{background:var(--ok-soft);color:var(--ok)}
+#nav a.fin{width:auto;padding:0 12px}
+#nav .meta{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap;padding-left:10px}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+.pager .next{margin-left:auto}
+section.q{display:none}section.q.active{display:block}
+.big{font-size:60px;font-weight:800;margin:0;text-align:center}
+table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}th{background:var(--pri-soft)}
+.warn{color:#b45309;font-weight:700}
+label.f{display:block;font-weight:600;margin-top:10px}
+input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;width:100%;max-width:360px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div><h1>📒 Actividades del portfolio: Redes</h1><p>Las 9 preguntas de la web del departamento · Reto 3</p></div><a href="index.html">← Volver a los apuntes</a></div></header>
+
+<div class="wrap" id="startBox">
+  <div class="card">
+    <h2 style="margin-top:0">👋 Cómo funciona</h2>
+    <p>Son las <b>9 actividades</b> de la Unidad 2 que tienes que tener en tu Google Sites. Cada una tiene hasta 3 pasos:</p>
+    <ol>
+      <li><b>📖 Lee y subraya:</b> haz clic en los trozos del texto que responden a la pregunta. Tienes <b>2 intentos</b> para comprobarlo. Si subrayas de más, pierdes puntos.</li>
+      <li><b>✍️ Con tus palabras:</b> se desbloquea después de subrayar. No se puede pegar texto: escríbelo tú.</li>
+      <li><b>🧩 Esquema o dibujo:</b> completa el esquema, clasifica o dibuja la red.</li>
+    </ol>
+    <p>Al final pulsa <b>Terminar</b>: verás tu nota y descargarás un <b>PDF</b> con todas tus respuestas para subirlo a tu Sites. Tu trabajo se guarda en este ordenador: si no terminas hoy, puedes seguir otro día en el mismo PC. La página también cuenta las veces que sales de ella.</p>
+    <label class="f">Nombre y apellidos<input type="text" id="nm" autocomplete="off"></label>
+    <label class="f">Grupo<input type="text" id="gr" placeholder="4º A" autocomplete="off"></label>
+    <div class="row"><button id="go">Empezar ▶</button><span id="contBox"></span></div>
+  </div>
+</div>
+
+<nav id="nav" style="display:none"><div class="wrap" id="navIn"></div></nav>
+<main class="wrap" id="main" style="display:none"></main>
+
+<script>
+/* ======================= DATOS ======================= */
+const Q=[
+{id:1,t:'¿Qué es una red informática?',
+ read:'*Una red es un conjunto de ordenadores conectados entre sí|*que pueden comunicarse compartiendo datos y recursos.|A través de una red podemos acceder a ficheros de otros ordenadores,|enviar mensajes|y compartir impresoras, discos o la conexión a Internet.|Normalmente los ordenadores se conectan mediante cables,|pero si la red ocupa una zona muy grande se usan líneas telefónicas, fibra óptica o satélites.',
+ ask:'Subraya la definición de red.',
+ write:{p:'Explica qué es una red informática con tus palabras y pon un ejemplo de algo que se comparta en la red del aula.',min:15,kw:[['conect','unid','enlaz'],['compart','comunic','recurs','datos']],kwn:['que están conectados','que comparten o se comunican']}},
+{id:2,t:'¿Qué tipos de redes existen según su tamaño o cobertura?',
+ read:'Según su tamaño o cobertura, existen cuatro tipos de redes.|*PAN, red de área personal:|conecta los dispositivos cercanos a una persona, como el móvil y unos auriculares.|*LAN, red de área local:|une ordenadores y periféricos en una zona pequeña, como un aula, un edificio o un avión.|*MAN, red de área metropolitana:|es una red de alta velocidad que da cobertura a toda una ciudad.|*WAN, red de área amplia:|se extiende por un país o un continente.|El mejor ejemplo de WAN es Internet.',
+ ask:'Subraya solo el nombre de cada tipo de red (no su explicación).',
+ write:{p:'Nombra los 4 tipos de redes según su cobertura, de la más pequeña a la más grande.',min:8,kw:[['pan','personal'],['lan','local'],['man','metropolit'],['wan','amplia','extens']],kwn:['PAN','LAN','MAN','WAN']},
+ sch:'levels'},
+{id:3,t:'¿Qué tipos de redes existen según el medio físico utilizado?',
+ read:'Según el medio físico que utilizan para transmitir la información, las redes pueden ser de dos tipos.|*Redes cableadas:|los datos viajan por cables, como el par trenzado, el coaxial o la fibra óptica.|*Redes inalámbricas:|los datos viajan por el aire mediante ondas,|como el WiFi, el Bluetooth, las microondas o los satélites.|Muchas redes mezclan los dos tipos: en casa, el ordenador puede ir por cable y el móvil por WiFi.',
+ ask:'Subraya el nombre de los dos tipos de redes.',
+ write:{p:'¿Qué dos tipos hay? Explica la diferencia entre ellos.',min:12,kw:[['cable'],['inalambr','aire','onda','wifi']],kwn:['cableadas','inalámbricas']},
+ sch:'tree'},
+{id:4,t:'¿Qué es la topología de red? Dibuja y nombra los tipos vistos en el tema.',
+ read:'*La topología de red es la forma en la que están conectados los equipos de una red,|es decir, el dibujo o esquema que forman.|Las topologías más importantes son:|*bus,|en la que todos los equipos comparten un mismo cable troncal;|*estrella,|en la que todos los equipos se conectan a un aparato central, el switch;|*anillo,|en la que cada equipo se une al siguiente formando un círculo;|e|*híbridas,|que mezclan varias de las anteriores, como la estrella jerárquica o árbol.',
+ ask:'Subraya la definición de topología y el nombre de cada tipo.',
+ write:{p:'Explica con tus palabras qué es la topología de una red. ¿Cuál es la topología de la red del aula?',min:15,kw:[['forma','dibujo','esquema','disposic','conectad'],['estrella']],kwn:['qué es (la forma)','la del aula: estrella']},
+ sch:'draw'},
+{id:5,t:'¿Con qué otro nombre se conocen los elementos físicos de una red?',
+ read:'Para montar una red necesitamos dos tipos de elementos.|Por un lado, están los aparatos y materiales que se pueden tocar:|tarjetas de red, cables, conectores, switch y router.|A todos estos elementos físicos se les llama|*hardware de red.|Por otro lado, necesitamos programas y reglas para que los equipos se entiendan,|que estudiaremos en la siguiente pregunta.',
+ ask:'Subraya el otro nombre de los elementos físicos.',
+ write:{p:'Escribe el nombre y 3 ejemplos de elementos físicos de una red.',min:6,kw:[['hardware'],['switch','router','cable','tarjeta','conector','rj45','punto de acceso']],kwn:['hardware','ejemplos']},
+ sch:'classify'},
+{id:6,t:'¿Con qué otro nombre se conoce el software de red?',
+ read:'Los aparatos por sí solos no sirven de nada si los equipos no hablan el mismo idioma.|El software de red está formado por los|*protocolos de comunicación:|*un conjunto de reglas que todos los equipos siguen para entenderse.|Da igual que uses Windows, Ubuntu o Android:|el protocolo que se usa en Internet se llama TCP/IP.|TCP trocea la información en paquetes|e IP pone a cada paquete la dirección de destino.',
+ ask:'Subraya el otro nombre del software de red y qué significa.',
+ write:{p:'¿Cómo se llama el software de red? ¿Cuál es el más importante y para qué sirve?',min:12,kw:[['protocol'],['tcp']],kwn:['protocolos','TCP/IP']}},
+{id:7,t:'¿Qué es una tarjeta de red y cómo sabemos que está transmitiendo datos?',
+ read:'La tarjeta de red también se llama adaptador o interfaz de red.|*Es el componente que convierte la información que el ordenador quiere enviar o recibir en señales|que se pueden transmitir por el cable o por el aire.|Puede ser de cable, con un conector RJ45,|o inalámbrica (WiFi).|Junto al conector suele haber unas pequeñas luces (LED).|*Cuando la luz parpadea, la tarjeta está transmitiendo datos.|Si la luz está apagada, no hay conexión: el cable está suelto o el equipo apagado.',
+ ask:'Subraya qué es una tarjeta de red y cómo sabemos que transmite datos.',
+ write:{p:'Responde a las dos partes de la pregunta con tus palabras. Pista: mira detrás de tu ordenador, junto al cable de red.',min:15,kw:[['señal','convier','transform'],['luz','led','parpade']],kwn:['convierte en señales','la luz parpadea']}},
+{id:8,t:'¿Qué es la dirección MAC de una tarjeta de red y cómo podemos conocerla?',
+ read:'*La dirección MAC es un identificador único|*que el fabricante asigna a cada tarjeta de red.|Está formada por seis parejas de números y letras separadas por dos puntos,|por ejemplo 00:1B:44:11:3A:B7.|Funciona como el DNI del aparato: no cambia aunque te conectes a otra red.|*Para conocerla en Ubuntu, abrimos la Terminal y escribimos el comando ip a.|La MAC aparece al lado de la palabra link/ether.|En Windows se usa el comando ipconfig /all.',
+ ask:'Subraya qué es la MAC y cómo podemos conocerla en Ubuntu.',
+ write:{p:'Explica qué es la MAC y cómo la puedes ver tú en el ordenador del aula.',min:15,kw:[['fabric'],['unic','identific','dni'],['ip a','terminal','comando','ipconfig']],kwn:['la asigna el fabricante','es única','el comando ip a']},
+ sch:'term'},
+{id:9,t:'Nombra los tipos de cables de conexión utilizados en redes de ordenadores.',
+ read:'En las redes cableadas se usan tres tipos principales de cables.|*El cable de par trenzado|tiene 8 hilos de cobre trenzados de dos en dos y usa el conector RJ45; es el más habitual.|*El cable coaxial|tiene un hilo central de cobre rodeado de un aislante y una malla metálica; es el de la antena de la televisión.|*La fibra óptica|es un hilo finísimo de vidrio o plástico por el que viajan pulsos de luz; es la más rápida.|Las ondas WiFi no son un cable: viajan por el aire.',
+ ask:'Subraya el nombre de los tres tipos de cable.',
+ write:{p:'Nombra los tres tipos de cable y di cuál es el que usamos en el aula.',min:10,kw:[['trenzado'],['coaxial'],['fibra']],kwn:['par trenzado','coaxial','fibra óptica']},
+ sch:'cables'}
+];
+const LEVELS=[['PAN','Auriculares Bluetooth con el móvil'],['LAN','Los ordenadores del aula'],['MAN','La red de una ciudad'],['WAN','Internet']];
+const TREE={Cableadas:['Par trenzado','Cable coaxial','Fibra óptica'],Inalámbricas:['WiFi','Bluetooth','Satélite']};
+const CLASS=[['Switch','Hardware'],['Cable de par trenzado','Hardware'],['Router','Hardware'],['Tarjeta de red','Hardware'],['Protocolo TCP/IP','Software'],['Reglas para enviar paquetes','Software']];
+const CABLES={tp:['Par trenzado','Señales eléctricas'],cx:['Coaxial','Señales eléctricas'],fo:['Fibra óptica','Pulsos de luz']};
+const BOARDS={
+ star:{desc:'Conecta cada ordenador <b>solo</b> al aparato central (switch).',ans:'Estrella',
+   nodes:{S:{x:150,y:100,k:'sw'},P1:{x:150,y:28},P2:{x:255,y:72},P3:{x:222,y:170},P4:{x:78,y:170},P5:{x:45,y:72}}},
+ ring:{desc:'Une cada ordenador con el siguiente hasta cerrar un círculo.',ans:'Anillo',
+   nodes:{P1:{x:150,y:28},P2:{x:255,y:85},P3:{x:212,y:172},P4:{x:88,y:172},P5:{x:45,y:85}}},
+ bus:{desc:'Conecta cada ordenador a un punto del cable troncal (la línea gris).',ans:'Bus',trunk:true,
+   nodes:{T1:{x:40,y:100,k:'tap'},T2:{x:95,y:100,k:'tap'},T3:{x:150,y:100,k:'tap'},T4:{x:205,y:100,k:'tap'},T5:{x:260,y:100,k:'tap'},
+          P1:{x:40,y:30},P2:{x:95,y:170},P3:{x:150,y:30},P4:{x:205,y:170},P5:{x:260,y:30}}}
+};
+const TOPO_NAMES=['Estrella','Anillo','Bus','Malla'];
+
+/* ======================= UTILIDADES ======================= */
+const $=id=>document.getElementById(id);
+const R=n=>Math.floor(Math.random()*n);
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const words=s=>(s||'').trim().split(/\s+/).filter(Boolean).length;
+const chunks=q=>q.read.split('|').map(c=>({ok:c.startsWith('*'),t:c.replace(/^\*/,'')}));
+const KEY='portfolioRedes4_v1';
+let S=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){return null;}}
+function newState(name,group){
+  const mac=Array.from({length:6},(_,i)=>i<3?['3c','52','82'][i]:R(256).toString(16).padStart(2,'0')).join(':');
+  const qs={};Q.forEach(q=>qs[q.id]={sel:[],att:0,rs:null,text:'',sch:{}});
+  return {name,group,start:Date.now(),leaves:0,q:qs,mac,ip:`192.168.${R(200)+20}.${R(200)+20}`,host:`aula-pc${String(R(30)+1).padStart(2,'0')}`,
+    cableOrder:shuf(Object.keys(CABLES)),classOrder:shuf(CLASS.map(c=>c[0])),boards:{star:{links:[],name:''},ring:{links:[],name:''},bus:{links:[],name:''}},
+    boardOrder:shuf(Object.keys(BOARDS)),cur:0,finished:false,tries:1};
+}
+
+/* ======================= PUNTUACIÓN ======================= */
+const W=q=>q.sch?{r:3,w:3,s:4}:{r:5,w:5,s:0};
+function readRaw(q,sel){const C=chunks(q);const tot=C.filter(c=>c.ok).length;let good=0,bad=0;sel.forEach(i=>C[i].ok?good++:bad++);return Math.max(0,(good-bad)/tot);}
+function writeScore(q,text){const w=q.write;const n=words(text);const t=norm(text);
+  const hits=w.kw.map(g=>g.some(k=>t.includes(norm(k))));const kf=hits.filter(Boolean).length/w.kw.length;
+  return {f:Math.min(1,n/w.min)*0.3+kf*0.7*(n>=Math.min(4,w.min)?1:0),hits,n};}
+function schScore(q){const s=S.q[q.id].sch;
+  if(q.sch==='levels'){let k=0;LEVELS.forEach((l,i)=>{if(s['n'+i]===l[0])k++;if(s['e'+i]===l[1])k++;});return k/8;}
+  if(q.sch==='tree'){let k=0;Object.keys(TREE).forEach(b=>{const got=new Set([0,1,2].map(i=>s[b+i]).filter(Boolean));got.forEach(v=>{if(TREE[b].includes(v))k++;});});return k/6;}
+  if(q.sch==='classify'){return CLASS.filter(c=>s[c[0]]===c[1]).length/CLASS.length;}
+  if(q.sch==='term'){return s.tok===S.mac?1:0;}
+  if(q.sch==='cables'){let k=0;Object.keys(CABLES).forEach(c=>{if(s['n'+c]===CABLES[c][0])k++;if(s['m'+c]===CABLES[c][1])k++;});return k/6;}
+  if(q.sch==='draw'){let k=0;Object.keys(BOARDS).forEach(b=>{if(boardOK(b))k+=0.7;if(S.boards[b].name===BOARDS[b].ans)k+=0.3;});return k/3;}
+  return 0;}
+function qScore(q){const w=W(q),st=S.q[q.id];
+  const r=(st.rs||0)*w.r, wr=writeScore(q,st.text).f*w.w, s=q.sch?schScore(q)*w.s:0;
+  return {r,wr,s,tot:r+wr+s,max:10};}
+function progressOf(q){const st=S.q[q.id];let p=0,n=q.sch?3:2;if(st.att>0)p++;if(words(st.text)>=q.write.min)p++;
+  if(q.sch){const s=st.sch;let filled=false;
+    if(q.sch==='draw')filled=Object.keys(BOARDS).every(b=>S.boards[b].links.length&&S.boards[b].name);
+    else if(q.sch==='term')filled=!!s.tok;
+    else{const need={levels:8,tree:6,classify:6,cables:6}[q.sch];filled=Object.values(s).filter(Boolean).length>=need;}
+    if(filled)p++;}
+  return p/n;}
+
+/* ======================= TABLEROS ======================= */
+const lk=(a,b)=>[a,b].sort().join('-');
+function deg(b,n){return S.boards[b].links.filter(l=>l.split('-').includes(n)).length;}
+function boardOK(b){const L=S.boards[b].links,P=['P1','P2','P3','P4','P5'];
+  if(b==='star')return L.length===5&&P.every(p=>L.includes(lk(p,'S')));
+  if(b==='ring'){if(L.length!==5||!P.every(p=>deg(b,p)===2))return false;
+    const adj={};P.forEach(p=>adj[p]=[]);L.forEach(l=>{const[a,c]=l.split('-');adj[a].push(c);adj[c].push(a);});
+    const seen=new Set(),st=['P1'];while(st.length){const x=st.pop();if(seen.has(x))continue;seen.add(x);adj[x].forEach(y=>st.push(y));}return seen.size===5;}
+  if(b==='bus')return L.length===5&&P.every(p=>{const m=L.filter(l=>l.split('-').includes(p));return m.length===1&&m[0].split('-').some(x=>x[0]==='T');});
+  return false;}
+let pick={};
+function drawBoard(b,locked){
+  const B=BOARDS[b],st=S.boards[b];let g='';
+  if(B.trunk)g+=`<line x1="15" y1="100" x2="285" y2="100" stroke="#64748b" stroke-width="7" stroke-linecap="round"/>`;
+  st.links.forEach(l=>{const[a,c]=l.split('-');const A=B.nodes[a],C=B.nodes[c];g+=`<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#0f766e" stroke-width="4"/><line class="ln" data-l="${l}" x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="transparent" stroke-width="16" style="cursor:pointer"/>`;});
+  Object.entries(B.nodes).forEach(([id,n])=>{const sel=pick[b]===id;
+    if(n.k==='sw')g+=`<g class="nd" data-n="${id}" style="cursor:pointer"><rect x="${n.x-30}" y="${n.y-14}" width="60" height="28" rx="6" fill="${sel?'#f59e0b':'#1e293b'}"/><text x="${n.x}" y="${n.y+5}" fill="#fff" font-size="12" text-anchor="middle">switch</text></g>`;
+    else if(n.k==='tap')g+=`<g class="nd" data-n="${id}" style="cursor:pointer"><circle cx="${n.x}" cy="${n.y}" r="9" fill="${sel?'#f59e0b':'#94a3b8'}" stroke="#334155" stroke-width="2"/></g>`;
+    else g+=`<g class="nd" data-n="${id}" style="cursor:pointer"><circle cx="${n.x}" cy="${n.y}" r="20" fill="${sel?'#fde68a':'#e0f2fe'}" stroke="#0369a1" stroke-width="2.5"/><text x="${n.x}" y="${n.y+7}" font-size="19" text-anchor="middle">💻</text></g>`;});
+  const svg=$('bd_'+b);svg.innerHTML=g;
+  if(locked)return;
+  svg.querySelectorAll('.nd').forEach(el=>el.onclick=()=>{const n=el.dataset.n;
+    if(!pick[b]){pick[b]=n;drawBoard(b);return;}
+    const a=pick[b];pick[b]=null;
+    if(a!==n){const ka=B.nodes[a].k,kn=B.nodes[n].k;
+      if(ka==='tap'&&kn==='tap'){}else{const key=lk(a,n);const i=st.links.indexOf(key);if(i>=0)st.links.splice(i,1);else st.links.push(key);save();}}
+    drawBoard(b);refreshNav();});
+  svg.querySelectorAll('.ln').forEach(el=>el.onclick=()=>{const i=st.links.indexOf(el.dataset.l);if(i>=0){st.links.splice(i,1);save();drawBoard(b);refreshNav();}});
+}
+
+/* ======================= RENDER ======================= */
+function sel(id,opts,val,dis){return `<select data-k="${id}" ${dis?'disabled':''}><option value="">— elige —</option>${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select>`;}
+function schemeHTML(q,locked){const s=S.q[q.id].sch;
+  if(q.sch==='levels'){const sig=['PAN','LAN','MAN','WAN'],ex=shuf(LEVELS.map(l=>l[1]));
+    return `<p class="sub">Ordena de la red <b>más pequeña</b> (arriba) a la <b>más grande</b> (abajo): elige el nombre y un ejemplo.</p><div class="levels">${LEVELS.map((l,i)=>`<div class="lvl" style="width:${70+i*10}%;min-width:min(100%,430px)"><b>${['Más pequeña','','','Más grande'][i]||'↓'}</b>${sel('n'+i,sig,s['n'+i],locked)}${sel('e'+i,ex,s['e'+i],locked)}</div>`).join('')}</div>`;}
+  if(q.sch==='tree'){const pool=Object.values(TREE).flat().sort();
+    return `<p class="sub">Completa el esquema: coloca cada medio en su rama.</p><div class="tree"><div class="root">Redes según el medio físico</div><div class="branches">${Object.keys(TREE).map(b=>`<div class="br"><h4>${b==='Cableadas'?'🔌':'📶'} ${b}</h4>${[0,1,2].map(i=>sel(b+i,pool,s[b+i],locked)).join('')}</div>`).join('')}</div></div>`;}
+  if(q.sch==='classify')return `<p class="sub">Clasifica cada elemento: ¿es hardware (se puede tocar) o software (reglas y programas)?</p><div class="classify">${S.classOrder.map(n=>`<div><span>${n}</span>${sel(n,['Hardware','Software'],s[n],locked)}</div>`).join('')}</div>`;
+  if(q.sch==='term'){const out=`alumno@${S.host}:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP
+    link/ether ${S.mac} brd ff:ff:ff:ff:ff:ff
+    inet ${S.ip}/24 brd ${S.ip.split('.').slice(0,3).join('.')}.255 scope global dynamic enp3s0`;
+    const html=out.split(/(\s+)/).map(t=>/^\s+$/.test(t)||!t?t:`<span class="tk ${s.tok===t?'sel':''}" data-t="${t.replace(/</g,'&lt;')}">${t.replace(/</g,'&lt;')}</span>`).join('');
+    return `<p class="sub">Esto es lo que sale al escribir <b>ip a</b> en un ordenador del aula. <b>Haz clic en la dirección MAC</b> de la tarjeta de cable.</p><pre class="term" id="term8">${html}</pre>`;}
+  if(q.sch==='cables'){const D={
+    tp:`<circle cx="70" cy="60" r="48" fill="#2563eb"/><circle cx="70" cy="60" r="42" fill="#e2e8f0"/>${[[52,42,'#f97316'],[70,36,'#fff'],[88,42,'#16a34a'],[94,60,'#fff'],[88,78,'#2563eb'],[70,84,'#fff'],[52,78,'#92400e'],[46,60,'#fff']].map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="8" fill="${c[2]}" stroke="#475569"/>`).join('')}<text x="135" y="64" font-size="12" fill="#334155">8 hilos</text>`,
+    cx:`<circle cx="70" cy="60" r="48" fill="#111827"/><circle cx="70" cy="60" r="40" fill="none" stroke="#9ca3af" stroke-width="6" stroke-dasharray="3 3"/><circle cx="70" cy="60" r="34" fill="#f1f5f9"/><circle cx="70" cy="60" r="8" fill="#b45309"/><text x="135" y="64" font-size="12" fill="#334155">malla</text>`,
+    fo:`<circle cx="70" cy="60" r="48" fill="#f59e0b"/><circle cx="70" cy="60" r="30" fill="#fde68a"/><circle cx="70" cy="60" r="7" fill="#fff" stroke="#38bdf8" stroke-width="3"/><circle cx="70" cy="60" r="14" fill="none" stroke="#38bdf8" stroke-width="1" opacity=".6"/><text x="135" y="64" font-size="12" fill="#334155">vidrio</text>`};
+    return `<p class="sub">Estos son los cortes de tres cables. Identifica cada uno y qué viaja por él.</p><div class="cables">${S.cableOrder.map((c,i)=>`<div class="cb"><b>Cable ${'ABC'[i]}</b><svg viewBox="0 0 180 120">${D[c]}</svg>${sel('n'+c,['Par trenzado','Coaxial','Fibra óptica'],s['n'+c],locked)}${sel('m'+c,['Señales eléctricas','Pulsos de luz'],s['m'+c],locked)}</div>`).join('')}</div>`;}
+  if(q.sch==='draw')return `<p class="sub"><b>Dibuja:</b> haz clic en un equipo y después en otro para unirlos con un cable. Haz clic en un cable para borrarlo. Después elige el <b>nombre</b> de cada topología.</p><div class="boards">${S.boardOrder.map((b,i)=>`<div class="board"><p><b>Red ${i+1}:</b> ${BOARDS[b].desc}</p><svg id="bd_${b}" viewBox="0 0 300 200"></svg><div class="row" style="margin-top:6px">${sel('bn_'+b,TOPO_NAMES,S.boards[b].name,locked)}${locked?'':`<button class="ghost" data-clear="${b}" type="button">🗑️ Borrar</button>`}</div><div class="bfb" id="bfb_${b}"></div></div>`).join('')}</div>`;
+  return '';}
+
+function render(){
+  const main=$('main');
+  main.innerHTML=Q.map((q,qi)=>{const st=S.q[q.id],C=chunks(q),locked=S.finished,readDone=st.att>=2||st.rs===1||locked;
+    return `<section class="q card" id="q${q.id}">
+      <div class="qhead"><div class="qnum">${q.id}</div><h2>${q.t}</h2></div>
+      <div class="step ${readDone?'done':''}" id="rd${q.id}"><h3>📖 Paso 1 · Lee y subraya</h3><p class="sub">${q.ask} Haz clic en cada trozo para subrayarlo; otro clic lo quita.</p>
+        <div class="reading">${C.map((c,i)=>`<span class="ch" data-i="${i}">${c.t}</span>`).join(' ')}</div>
+        <div class="row"><button data-check="${q.id}" ${readDone?'disabled':''}>✔️ Comprobar subrayado</button><span class="wc">Intentos: ${st.att} / 2</span></div><div id="rfb${q.id}"></div></div>
+      <div class="step ${st.att?'':'lock'}"><h3>✍️ Paso 2 · Con tus palabras</h3><p class="sub">${q.write.p} <i>(mínimo ${q.write.min} palabras · no se puede pegar)</i></p>
+        <textarea data-w="${q.id}" ${st.att&&!locked?'':'disabled'} placeholder="${st.att?'Escribe aquí…':'🔒 Primero subraya y comprueba el paso 1'}">${st.text.replace(/</g,'&lt;')}</textarea><div class="wc" id="wc${q.id}"></div></div>
+      ${q.sch?`<div class="step" id="sc${q.id}"><h3>🧩 Paso 3 · ${q.sch==='draw'?'Dibuja y nombra':'Completa el esquema'}</h3>${schemeHTML(q,locked)}<div id="sfb${q.id}"></div></div>`:''}
+      <div class="pager"><button class="ghost" data-go="${qi-1}" ${qi===0?'style="visibility:hidden"':''}>← Anterior</button><button class="next" data-go="${qi+1}">${qi<Q.length-1?'Siguiente: pregunta '+(qi+2)+' →':'Ir a terminar →'}</button></div>
+    </section>`;}).join('')+
+   `<section class="q card" id="qfin"><h2 style="margin-top:0">🏁 Terminar</h2><div id="finBody"></div></section>`;
+  Q.forEach(q=>{paintRead(q);updWC(q);});
+  main.querySelectorAll('.ch').forEach(el=>el.onclick=()=>{const sec=el.closest('section'),qid=+sec.id.slice(1),st=S.q[qid];
+    if(S.finished||st.att>=2||st.rs===1)return;const i=+el.dataset.i;const k=st.sel.indexOf(i);k>=0?st.sel.splice(k,1):st.sel.push(i);save();paintRead(Q.find(q=>q.id===qid));});
+  main.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>checkRead(+b.dataset.check));
+  main.querySelectorAll('textarea[data-w]').forEach(t=>{const q=Q.find(x=>x.id===+t.dataset.w);
+    t.oninput=()=>{S.q[q.id].text=t.value;save();updWC(q);refreshNav();};
+    t.onpaste=e=>{e.preventDefault();alert('Escríbelo con tus palabras: aquí no se puede pegar 😉');};
+    t.ondrop=e=>e.preventDefault();});
+  main.querySelectorAll('.step select').forEach(s=>s.onchange=()=>{const qid=+s.closest('section').id.slice(1),k=s.dataset.k;
+    if(k.startsWith('bn_'))S.boards[k.slice(3)].name=s.value;else S.q[qid].sch[k]=s.value;save();refreshNav();});
+  main.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+  main.querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>{S.boards[b.dataset.clear].links=[];pick[b.dataset.clear]=null;save();drawBoard(b.dataset.clear);refreshNav();});
+  const t8=$('term8');if(t8)t8.querySelectorAll('.tk').forEach(el=>el.onclick=()=>{if(S.finished)return;S.q[8].sch.tok=el.dataset.t;save();t8.querySelectorAll('.tk').forEach(x=>x.classList.toggle('sel',x===el));refreshNav();});
+  Object.keys(BOARDS).forEach(b=>drawBoard(b,S.finished));
+  if(S.finished)showResults();else finPanel();
+  buildNav();go(S.cur||0,true);
+}
+function paintRead(q){const st=S.q[q.id],C=chunks(q),box=$('rd'+q.id);const reveal=st.att>=2||st.rs===1||S.finished;
+  box.querySelectorAll('.ch').forEach(el=>{const i=+el.dataset.i,s=st.sel.includes(i);el.className='ch';
+    if(st.att>0&&reveal){if(s&&C[i].ok)el.classList.add('right');else if(s)el.classList.add('wrong');else if(C[i].ok)el.classList.add('miss');}
+    else if(s)el.classList.add('sel');});
+  const fb=$('rfb'+q.id);
+  if(st.att===0){fb.innerHTML='';return;}
+  if(readRaw(q,st.sel)===1)fb.innerHTML=`<div class="fb ok">✅ ¡Perfecto! Has subrayado justo lo importante.${st.att===2?' (en el 2º intento)':''}</div>`;
+  else if(reveal)fb.innerHTML=`<div class="fb bad">En verde está lo que había que subrayar; en rojo, lo que sobraba. Ya puedes seguir con el paso 2.</div>`;
+  else fb.innerHTML=`<div class="fb info">🤔 ${st.lastMsg||''} Te queda 1 intento. Vuelve a leer y corrige.</div>`;}
+function checkRead(id){const q=Q.find(x=>x.id===id),st=S.q[id];if(!st.sel.length){alert('Primero subraya algo haciendo clic en el texto.');return;}
+  const C=chunks(q);const raw=readRaw(q,st.sel);st.att++;
+  const miss=C.filter((c,i)=>c.ok&&!st.sel.includes(i)).length,extra=st.sel.filter(i=>!C[i].ok).length;
+  st.lastMsg=raw===1?'':`${miss?`Te falta subrayar ${miss} trozo${miss>1?'s':''}.`:''} ${extra?`Has subrayado ${extra} trozo${extra>1?'s':''} que sobra${extra>1?'n':''}.`:''}`;
+  st.rs=raw===1?(st.att===1?1:0.9):(st.att>=2?raw*0.8:null);
+  save();render();go(Q.findIndex(x=>x.id===id),true);}
+function updWC(q){const st=S.q[q.id],el=$('wc'+q.id);if(!el)return;const ws=writeScore(q,st.text);
+  let h=`Palabras: ${ws.n} / ${q.write.min}`;
+  if(ws.n>=q.write.min){const miss=q.write.kwn.filter((k,i)=>!ws.hits[i]);h+=miss.length?` · 💡 Revisa si has hablado de: <b>${miss.join(', ')}</b>`:' · ✅ Incluye las ideas clave';}
+  el.innerHTML=h;}
+
+/* ======================= NAVEGACIÓN ======================= */
+function buildNav(){$('navIn').innerHTML=Q.map((q,i)=>`<a href="#" data-i="${i}">${q.id}</a>`).join('')+`<a href="#" class="fin" data-i="${Q.length}">🏁 Final</a><span class="meta" id="meta"></span>`;
+  $('navIn').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();go(+a.dataset.i);});refreshNav();}
+function refreshNav(){if(!S)return;$('navIn').querySelectorAll('a').forEach(a=>{const i=+a.dataset.i;a.classList.toggle('cur',i===S.cur);
+  if(i<Q.length){const p=progressOf(Q[i]);a.classList.toggle('full',p===1);a.classList.toggle('half',p>0&&p<1);}});
+  const m=$('meta');if(m)m.innerHTML=`👤 ${S.name} · ${S.leaves?`<span class="warn">Salidas: ${S.leaves}</span>`:'Salidas: 0'}`;
+  if(!S.finished&&S.cur===Q.length)finPanel();}
+function go(i,noScroll){i=Math.max(0,Math.min(Q.length,i));S.cur=i;save();
+  document.querySelectorAll('section.q').forEach((s,k)=>s.classList.toggle('active',k===i));refreshNav();
+  if(!noScroll)window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ======================= FINAL ======================= */
+function finPanel(){const pend=Q.filter(q=>progressOf(q)<1).map(q=>q.id);
+  $('finBody').innerHTML=`<p>${pend.length?`⚠️ Te faltan pasos en las preguntas: <b>${pend.join(', ')}</b> (en la barra de arriba salen en amarillo o gris). Puedes terminar igualmente, pero lo que falte contará como 0.`:'✅ Has completado todos los pasos.'}</p>
+   <p>Al pulsar <b>Terminar</b> se corrige todo y ya <b>no podrás cambiar</b> las respuestas.</p><button id="finBtn">🏁 Terminar y ver mi nota</button>`;
+  $('finBtn').onclick=()=>{if(pend.length&&!confirm('Te faltan pasos por hacer. ¿Terminar igualmente?'))return;
+    Q.forEach(q=>{const st=S.q[q.id];if(st.att>0&&st.rs===null)st.rs=readRaw(q,st.sel);});
+    S.finished=true;S.end=Date.now();save();render();go(Q.length);};}
+function results(){return Q.map(q=>({q,sc:qScore(q)}));}
+function showResults(){const rs=results();const tot=rs.reduce((a,r)=>a+r.sc.tot,0);const nota=Math.round(tot/(Q.length*10)*100)/10;S.nota=nota;
+  $('finBody').innerHTML=`<p class="big" style="color:${nota>=5?'#15803d':'#b91c1c'}">${nota.toFixed(1)}</p><p style="text-align:center">${nota>=9?'🏆 ¡Excelente!':nota>=7?'👏 ¡Muy bien!':nota>=5?'👍 Aprobado.':'💪 Repasa y pregunta al profesor.'}</p>
+   <div style="overflow-x:auto"><table><tr><th>Pregunta</th><th>Subrayado</th><th>Tus palabras</th><th>Esquema</th><th>Total /10</th></tr>${rs.map(r=>`<tr><td>${r.q.id}</td><td>${r.sc.r.toFixed(1)} / ${W(r.q).r}</td><td>${r.sc.wr.toFixed(1)} / ${W(r.q).w}</td><td>${r.q.sch?r.sc.s.toFixed(1)+' / '+W(r.q).s:'—'}</td><td><b>${r.sc.tot.toFixed(1)}</b></td></tr>`).join('')}</table></div>
+   <p style="font-size:14px;color:var(--muted)">La nota de “tus palabras” es orientativa: el profesor leerá tus respuestas en el PDF.</p>
+   <div class="row"><button id="pdfBtn">📄 Descargar PDF para mi Google Sites</button><button class="ghost" id="redo">🔄 Empezar de nuevo</button></div>
+   <p style="font-size:14px;color:var(--muted)">Puedes volver a cada pregunta (barra de arriba) para ver la corrección del esquema.</p>`;
+  $('pdfBtn').onclick=pdf;
+  $('redo').onclick=()=>{if(!confirm('Se borrarán todas tus respuestas. ¿Seguro?'))return;const t=(S.tries||1)+1,n=S.name,g=S.group;S=newState(n,g);S.tries=t;save();render();go(0);};
+  Q.forEach(q=>markScheme(q));}
+function markScheme(q){if(!q.sch)return;const s=S.q[q.id].sch,box=$('sc'+q.id);if(!box)return;
+  const mark=(k,good)=>{const el=box.querySelector(`select[data-k="${k}"]`);if(el)el.classList.add(good?'good':'badsel');};
+  if(q.sch==='levels')LEVELS.forEach((l,i)=>{mark('n'+i,s['n'+i]===l[0]);mark('e'+i,s['e'+i]===l[1]);});
+  if(q.sch==='tree')Object.keys(TREE).forEach(b=>[0,1,2].forEach(i=>mark(b+i,TREE[b].includes(s[b+i]))));
+  if(q.sch==='classify')CLASS.forEach(c=>mark(c[0],s[c[0]]===c[1]));
+  if(q.sch==='cables')Object.keys(CABLES).forEach(c=>{mark('n'+c,s['n'+c]===CABLES[c][0]);mark('m'+c,s['m'+c]===CABLES[c][1]);});
+  if(q.sch==='term'){const t=$('term8');t.querySelectorAll('.tk').forEach(el=>{if(el.dataset.t===S.mac)el.className='tk right';else if(el.dataset.t===s.tok)el.className='tk wrong';});}
+  if(q.sch==='draw')Object.keys(BOARDS).forEach(b=>{mark('bn_'+b,S.boards[b].name===BOARDS[b].ans);$('bfb_'+b).innerHTML=boardOK(b)?'<span class="ok">✅ Dibujo correcto</span>':'<span class="bad">❌ El dibujo no corresponde a la descripción</span>';});
+  const sc=schScore(q);$('sfb'+q.id).innerHTML=`<div class="fb ${sc===1?'ok':'bad'}">${sc===1?'✅ Esquema perfecto':'Esquema: '+Math.round(sc*100)+'% correcto. En rojo, lo que está mal.'}${sc<1?correctTxt(q):''}</div>`;}
+function correctTxt(q){if(q.sch==='levels')return '<br>Solución: '+LEVELS.map(l=>l[0]+' ('+l[1]+')').join(' → ');
+  if(q.sch==='tree')return '<br>Solución: Cableadas: '+TREE.Cableadas.join(', ')+'. Inalámbricas: '+TREE['Inalámbricas'].join(', ')+'.';
+  if(q.sch==='classify')return '<br>Solución: Software = Protocolo TCP/IP y Reglas para enviar paquetes; el resto es Hardware.';
+  if(q.sch==='cables')return '<br>Solución: par trenzado y coaxial llevan señales eléctricas; la fibra óptica, pulsos de luz.';
+  if(q.sch==='term')return '<br>Solución: la MAC es '+S.mac+' (la que va tras link/ether).';
+  if(q.sch==='draw')return '<br>Solución: estrella = todos al switch; anillo = círculo cerrado; bus = todos al cable troncal.';return '';}
+
+/* ======================= PDF ======================= */
+function hash(s){let h=5381;for(const ch of s)h=((h<<5)+h+ch.charCodeAt(0))>>>0;return h.toString(36).toUpperCase().slice(-6);}
+function pdf(){
+  if(!window.jspdf){alert('No se ha podido cargar el generador de PDF. Usa Imprimir → Guardar como PDF.');window.print();return;}
+  const {jsPDF}=window.jspdf;const doc=new jsPDF();let y=0;
+  const cl=s=>String(s==null?'':s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[→]/g,'->').replace(/[^\x20-\x7E -ÿ\n]/g,'');
+  const need=h=>{if(y+h>282){doc.addPage();y=18;}};
+  const para=(t,x,w,size,style)=>{doc.setFontSize(size||10);doc.setFont(undefined,style||'normal');const L=doc.splitTextToSize(cl(t),w||180);L.forEach(l=>{need(5);doc.text(l,x||14,y);y+=(size||10)*0.45+0.6;});};
+  doc.setFillColor(15,118,110);doc.rect(0,0,210,30,'F');doc.setTextColor(255);doc.setFontSize(17);doc.text('Unidad 2: Redes - Actividades del portfolio',14,15);doc.setFontSize(11);doc.text('Digitalización 4º ESO',14,24);
+  doc.setTextColor(30);y=40;
+  const secs=Math.round(((S.end||Date.now())-S.start)/1000);
+  [['Alumno/a',S.name],['Grupo',S.group],['Fecha',new Date(S.end||Date.now()).toLocaleString('es-ES')],['Tiempo total',Math.floor(secs/60)+' min'],['Salidas de la página',String(S.leaves)],['Intento',String(S.tries||1)]].forEach(r=>{doc.setFont(undefined,'bold');doc.setFontSize(11);doc.text(r[0]+':',14,y);doc.setFont(undefined,'normal');doc.text(cl(r[1]),62,y);y+=6.5;});
+  doc.setFillColor(S.nota>=5?220:254,S.nota>=5?252:226,S.nota>=5?231:226);doc.roundedRect(142,36,54,38,4,4,'F');doc.setFontSize(11);doc.text('NOTA',169,47,{align:'center'});doc.setFontSize(26);doc.setFont(undefined,'bold');doc.text(S.nota.toFixed(1),169,64,{align:'center'});doc.setFont(undefined,'normal');
+  y+=4;
+  results().forEach(({q,sc})=>{const st=S.q[q.id],C=chunks(q);
+    need(30);y+=3;doc.setFillColor(204,251,241);const tl=doc.splitTextToSize(cl(q.id+'. '+q.t),150);doc.rect(14,y-5,182,tl.length*5.5+3,'F');doc.setFontSize(11.5);doc.setFont(undefined,'bold');doc.text(tl,16,y);doc.setFont(undefined,'normal');doc.text(sc.tot.toFixed(1)+' / 10',194,y,{align:'right'});y+=tl.length*5.5+3;
+    const und=st.sel.slice().sort((a,b)=>a-b).map(i=>(C[i].ok?'':'[sobra] ')+C[i].t);
+    para('Subrayado ('+st.att+' intento'+(st.att===1?'':'s')+', '+sc.r.toFixed(1)+'/'+W(q).r+' pts): '+(und.length?und.join(' / '):'(sin hacer)'),16,178,9.5);
+    y+=1;para('Con mis palabras ('+sc.wr.toFixed(1)+'/'+W(q).w+' pts):',16,178,9.5,'bold');para(st.text||'(sin responder)',20,174,10);
+    if(q.sch){y+=1;para('Esquema ('+sc.s.toFixed(1)+'/'+W(q).s+' pts): '+schemeTxt(q),16,178,9.5);
+      if(q.sch==='draw')pdfBoards(doc,()=>y,v=>y=v,need,cl);}
+    y+=2;});
+  need(16);y+=4;doc.setFontSize(10.5);doc.setFillColor(204,251,241);doc.rect(14,y-6,182,11,'F');doc.text(`Código de verificación: ${hash(S.name+S.group+S.nota+S.start+S.leaves)}`,18,y+1);
+  const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8.5);doc.setTextColor(120);doc.text(`Prof. Carlos Alberto Toledo · ${cl(S.name)} · pág. ${i}/${n}`,14,291);doc.setTextColor(30);}
+  doc.save(`Portfolio_Redes_${S.name.replace(/\s+/g,'_')}.pdf`);
+}
+function schemeTxt(q){const s=S.q[q.id].sch;
+  if(q.sch==='levels')return LEVELS.map((l,i)=>`${i+1}) ${s['n'+i]||'-'}: ${s['e'+i]||'-'}`).join('  ');
+  if(q.sch==='tree')return Object.keys(TREE).map(b=>b+': '+[0,1,2].map(i=>s[b+i]||'-').join(', ')).join('  |  ');
+  if(q.sch==='classify')return S.classOrder.map(n=>`${n} = ${s[n]||'-'}`).join('; ');
+  if(q.sch==='term')return 'MAC señalada en la terminal: '+(s.tok||'-')+(s.tok===S.mac?' (correcta)':' (correcta: '+S.mac+')');
+  if(q.sch==='cables')return S.cableOrder.map((c,i)=>`Cable ${'ABC'[i]}: ${s['n'+c]||'-'}, ${s['m'+c]||'-'}`).join('; ');
+  if(q.sch==='draw')return 'dibujos y nombres:';return '';}
+function pdfBoards(doc,gy,sy,need,cl){need(52);let y=gy()+2;
+  S.boardOrder.forEach((b,i)=>{const B=BOARDS[b],x0=16+i*61,sc=0.19,st=S.boards[b];
+    doc.setDrawColor(200);doc.rect(x0,y,58,40);const P=n=>[x0+1+B.nodes[n].x*sc,y+1+B.nodes[n].y*sc];
+    if(B.trunk){doc.setDrawColor(100);doc.setLineWidth(1.2);doc.line(x0+1+15*sc,y+1+100*sc,x0+1+285*sc,y+1+100*sc);}
+    doc.setDrawColor(15,118,110);doc.setLineWidth(0.7);st.links.forEach(l=>{const[a,c]=l.split('-');const A=P(a),C=P(c);doc.line(A[0],A[1],C[0],C[1]);});
+    doc.setLineWidth(0.2);Object.keys(B.nodes).forEach(n=>{const p=P(n),k=B.nodes[n].k;if(k==='sw'){doc.setFillColor(30,41,59);doc.rect(p[0]-5,p[1]-2.5,10,5,'F');}else if(k==='tap'){doc.setFillColor(148,163,184);doc.circle(p[0],p[1],1.2,'F');}else{doc.setFillColor(224,242,254);doc.setDrawColor(3,105,161);doc.circle(p[0],p[1],3.4,'FD');}});
+    doc.setFontSize(8.5);doc.setTextColor(30);doc.text(cl(`Red ${i+1}: ${st.name||'(sin nombre)'} ${boardOK(b)?'- dibujo OK':'- dibujo incorrecto'}`),x0,y+44);});
+  sy(y+50);}
+
+/* ======================= INICIO ======================= */
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&!S.finished&&$('main').style.display!=='none'){S.leaves++;save();refreshNav();}});
+function boot(){$('startBox').style.display='none';$('main').style.display='block';$('nav').style.display='block';render();}
+$('go').onclick=()=>{const n=$('nm').value.trim(),g=$('gr').value.trim();if(n.split(/\s+/).length<2||!g){alert('Escribe tu nombre y apellidos y tu grupo.');return;}
+  const old=load();if(old&&old.name&&!confirm(old.name.toLowerCase()===n.toLowerCase()?'Ya tienes un trabajo empezado. Si empiezas de nuevo se borrará. ¿Seguro? (Para seguir, usa el botón Continuar)':`En este ordenador hay un trabajo de ${old.name}. Si empiezas, se borrará. ¿Seguro?`))return;
+  S=newState(n,g);save();boot();};
+const old=load();
+if(old&&old.name){$('nm').value=old.name;$('gr').value=old.group;$('contBox').innerHTML=`<button id="cont" class="ghost">Continuar el trabajo de ${old.name.replace(/</g,'&lt;')} ▶</button>`;$('cont').onclick=()=>{S=old;boot();};}
+</script>
+</body>
+</html>
